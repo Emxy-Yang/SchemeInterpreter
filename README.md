@@ -133,18 +133,18 @@ R = 119
 在本次大作业中，你将会涉及以下几个基本类型：
 
 
-| 表达式      | 含义     | 解释                                                                                                        |
-| ----------- | -------- | ----------------------------------------------------------------------------------------------------------- |
-| `Integer`   | 整数类   | 行为类似 `int`,用 `number?` 判断返回 `#t`                                                                   |
-| `Rational`  | 分数类   | 无 ,用 `number?` 判断返回 `#f`                                                                              |
-| `Boolean`   | 布尔类   | 只有 `#t` 和 `#f` 两种结果，对应 `true` 与 `false`，用 `boolean?` 判断                                      |
-| `String`    | 字符串类 | 行为类似 `string`,输入时用 `""` 标记，用 `string?` 判断                                                     |
-| `Symbol`    | 符号类   | 行为类似 `enum`，视为不可变的字符串，用 `symbol?` 判断                                                      |
-| `Pair`      | 表类     | 可递归式储存二元对从而储存表，用 `pair?` 判断                                                               |
-| `Null`      | 空类     | 空表 (`'()`)，用 `null?` 判断                                                                               |
-| `Terminate` | 终止类   | `(exit)` 的值类型                                                                                           |
-| `Void`      | 过程类   | 表示所有没有副作用的函数，包括 `(begin),(void),set!,display` 等，我们要求除了 `(void)` 之外其他命令不输出 `#<void>` |
-| `Procedure` | 函数类   | 用来表示函数的闭包，用 `procedure?` 判断                                                                    |
+| 表达式      | 含义     | 解释                                                                                                               |
+| ----------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| `Integer`   | 整数类   | 行为类似`int`,用 `number?` 判断返回 `#t`                                                                           |
+| `Rational`  | 分数类   | 无 ,用`number?` 判断返回 `#f`                                                                                      |
+| `Boolean`   | 布尔类   | 只有`#t` 和 `#f` 两种结果，对应 `true` 与 `false`，用 `boolean?` 判断                                              |
+| `String`    | 字符串类 | 行为类似`string`,输入时用 `""` 标记，用 `string?` 判断                                                             |
+| `Symbol`    | 符号类   | 行为类似`enum`，视为不可变的字符串，用 `symbol?` 判断                                                              |
+| `Pair`      | 表类     | 可递归式储存二元对从而储存表，用`pair?` 判断                                                                       |
+| `Null`      | 空类     | 空表 (`'()`)，用 `null?` 判断                                                                                      |
+| `Terminate` | 终止类   | `(exit)` 的值类型                                                                                                  |
+| `Void`      | 过程类   | 表示所有没有副作用的函数，包括`(begin),(void),set!,display` 等，我们要求除了 `(void)` 之外其他命令不输出 `#<void>` |
+| `Procedure` | 函数类   | 用来表示函数的闭包，用`procedure?` 判断                                                                            |
 
 我们已经为你实现了所有的类型处理与类型判断，在 `Subtask 1` 中，你将会接触到 `Integer` 与 `Boolean`.
 
@@ -206,6 +206,7 @@ scm> (eq? 1 1)
 (/ 1 0)     ;->RuntimeError
 (+ 1/2 1)   ;->3/2
 ```
+
 括号可以像下面这样嵌套：
 
 ```scheme
@@ -215,6 +216,7 @@ scm> (eq? 1 1)
 ```
 
 也支持任意个参数：
+
 ```scheme
 ;;0 parameter: (+) → 0;(*) → 1;(-)→ RuntimeError;(/)→ RuntimeError
 ;;1 parameter: (+ x) → x;(* x) → x;(- x) → -x;(/ x) → 1/x
@@ -241,9 +243,10 @@ scm> (eq? 1 1)
 (<= 1 1 1)     ;Value: #t 
 (>= 2 1 1)     ;Value: #t 
 ```
+
 我们在 `evaluation.cpp` 中已经提供了 `modulo`,`expt` 供参考二元函数的具体实现方式; 分数类的实现可参见 `Rational` 类，任意参数的实现可参见 `Variadic` 类; 我们还额外提供了 `compareNumericValues` 函数用来帮助你快速比较有理数与整数，当然你也可以选择自己实现它们:)
 
-----
+---
 
 ### Subtask 2：元组与列表
 
@@ -253,6 +256,7 @@ scm> (eq? 1 1)
 - `Extension`(`10 pts`)：完成 `list` 与 `list?` 命令; 完成 `set-car!` 与 `set-cdr!`，这部分讲解见后文 `Subtask5` 中的 `set！` 部分；
 
 #### 涉及类型
+
 在 `Subtask 2` 中，你将会接触到除 `Procedure` 外的所有类型.
 
 #### 元组与列表
@@ -319,7 +323,7 @@ scm> (eq? 1 1)
 ;Value: #t
 (pair? '())
 ;Value: #f
-(list? (cons 1 2))            
+(list? (cons 1 2))          
 ;Value: #f
 (list? (cons 1 (cons 2 '()))) 
 ;Value: #t
@@ -344,6 +348,7 @@ scm> (eq? 1 1)
 ```
 
 其中我们要求如果 `quote` 的对象是一个 `Pair`，我们要求其输出形式满足 `(A B . C)` 的形式，即:
+
 - 点符号只能出现一次
 - 点符号必须在倒数第二个位置
 - `(a . b . c)` 是非法的
@@ -364,7 +369,7 @@ scm> (eq? 1 1)
 (cdr (quote (quote () 1 2 . (4 . 2))));;Value:(() 1 2 4 . 2)
 ```
 
-----
+---
 
 ### Subtask 3：顺序执行，布尔值处理与条件语句
 
@@ -374,6 +379,7 @@ scm> (eq? 1 1)
 - `Extension`(`5 pts`)：正确实现 `cond` 语句.
 
 #### 涉及类型
+
 在 `Subtask 3` 中，你将会接触到除 `Procedure` 外的所有类型,主要接触 `Boolean` 类型.
 
 #### 布尔运算符
@@ -412,6 +418,7 @@ scm> (eq? 1 1)
 (or #f #f #f)
 ;Value: #f
 ```
+
 #### `if` 语句
 
 在 `scheme` 中，`if` 语句的格式如下：
@@ -419,6 +426,7 @@ scm> (eq? 1 1)
 ```Scheme
 (if predicate then_value else_value)
 ```
+
 如果 `predicate` 部分为真，那么 `then_value` 部分被求值，否则 `else_value` 部分被求值，并且求得的值会返回给 `if` 语句的括号外。请特别注意，在 `scheme` 中，任何不同于 `#f` 的值（包括不同类型的值,包括 `'()`）都会被视作 `#t`。
 
 请注意 `if` 具有短路性质，如果其不求值的分支涉及非法表达式是不需要报错的.
@@ -468,7 +476,7 @@ scm> (eq? 1 1)
 ;;Value: #t
 ```
 
-----
+---
 
 ### Subtask 4：变量与函数
 
@@ -500,6 +508,7 @@ undefined ;;Value: undefined 变量在当前作用域未定义
 ((if #t + -) 1 2) ;;Value: (if #t + -) 的值为 +，然后调用进行函数调用
 ;;Value: 3
 ```
+
 #### 函数的声明与调用
 
 在 `scheme` 中用 `lambda` 语句声明函数，其格式为 `(lambda parameters procedure)`,具体输出是返回一个 `ProcedureV(parameters,e,env)` 的闭包,这样就构成了一个函数的声明，如:
@@ -532,10 +541,10 @@ undefined ;;Value: undefined 变量在当前作用域未定义
 
 ```Scheme
 ; Hello world as a variable
-(define vhello "Hello world")     
+(define vhello "Hello world")   
 
 ; Hello world as a function
-(define fhello (lambda ()         
+(define fhello (lambda ()       
          "Hello world"))
 ```
 
@@ -546,19 +555,19 @@ undefined ;;Value: undefined 变量在当前作用域未定义
 简单来说，你需要支持:
 
 1. 变量的定义；要求同 `var`，而且不允许与 `primitives` 与 `reserve_words` 重名；而且支持同一变量的重命名;
- 
 2. 简单函数的定义,要求支持以下语法形式:
- 
- ```Scheme
- (define sum3 (lambda (a b c)(+ a b c)))
- ```
- 
- 以及其简写形式:
- 
- ```Scheme
- (define (sum3 a b c)
-   (+ a b c))
- ```
+
+```Scheme
+(define sum3 (lambda (a b c)(+ a b c)))
+```
+
+以及其简写形式:
+
+```Scheme
+(define (sum3 a b c)
+  (+ a b c))
+```
+
 3. 对一元简单递归函数的处理; 为此，你需要先在环境中创建一个占位符绑定，然后计算表达式的值，最后将更新绑定为实际值
 
 ```Scheme
@@ -582,13 +591,14 @@ undefined ;;Value: undefined 变量在当前作用域未定义
 
 注意这里的第二个参数如果包含多个表达式，你需要从左到右依次执行.
 
-----
+---
 
 ### Subtask 5：变量的绑定与赋值
 
 #### 任务概述
 
 本部分全部都是 `Extension`,包括:
+
 - `let` 和 `letrec`(`20pts`)
 - `set!`(`10pts`)
 - `Subtask 2` 中的 `set-car!` 与 `set-cdr!` 介绍，`Subtask 4` 中的嵌套定义与词法闭包介绍.
@@ -604,16 +614,21 @@ undefined ;;Value: undefined 变量在当前作用域未定义
 ```Scheme
 (let ((p1 v1) (p2 v2) ...) body)
 ```
+
 在这一过程中,声明了变量 `p1、p2、...`，并分别为它们赋初值 `v1、v2、...`（`v1 v2...` 可以是表达式）；`body` 由任意多个 S- 表达式构成。变量的作用域为 `body`.`let` 表达式的结果是在 `body` 中对 `body` 内的表达式进行求值; 注意这里的 `body` 如果包含多个表达式，你需要从左到右依次执行.
 
 本质上，
+
 ```Scheme
 (let ((p1 v1) (p2 v2) ...) body)
 ```
+
 只是
+
 ```Scheme
 ((lambda (p1 p2 ...) body) v1 v2 ...)
 ```
+
 的语法糖.例如:
 
 例 1：声明局部变量 `i` 和 `j`，将它们与 `1、2` 绑定，然后求二者的和。
@@ -622,6 +637,7 @@ undefined ;;Value: undefined 变量在当前作用域未定义
 (let ((i 1) (j 2)) (+ i j))
 ;Value: 3
 ```
+
 `let` 表达式可以嵌套使用。
 
 例 2：声明局部变量 `i` 和 `j`，并将分别将它们与 `1` 和 `i+2` 绑定，然后求它们的乘积。
@@ -632,20 +648,25 @@ undefined ;;Value: undefined 变量在当前作用域未定义
     (* i j)))
 ;Value: 3
 ```
+
 由于变量的作用域仅在 `body` 中，下列代码会产生错误，因为在变量 `j` 的作用域中没有变量 `i` 的定义。
 
 ```Scheme
 (let ((i 1) (j (+ i 2)))(* i j))
 ;;Error
 ```
+
 例 3：你应当正确实现变量在内层与外层的覆盖，譬如下式应当输出 `inner` 而非 `outer`。
+
 ```Scheme
 (let ((x (quote inner)))
 	(let ((func (lambda () x)))
       	(let ((x (quote outer))) (func))))
 ;;Value: inner
 ```
+
 例 4: 这里的变量绑定与 `var` 要求相同，支持 `primitives` 与 `reserved_words`;
+
 ```Scheme
 (let ((+ 1)) +)
 ;;Value: 1
@@ -707,6 +728,7 @@ undefined ;;Value: undefined 变量在当前作用域未定义
                      (* n (fact (- n 1)))))))
   (fact 5))
 ```
+
 语法 `letrec` 是定义局部变量的俗成方式。
 
 #### 赋值 (`set!`,`set-car!`,`set-cdr!`)
@@ -740,9 +762,9 @@ tree
 ```
 
 #### 嵌套定义的实现
- 
+
 对于一元递归的实现是简单，现在我们希望你能够实现形如下文的嵌套定义:
- 
+
 ```Scheme
 (define (is-even n)
   (cond
@@ -756,6 +778,7 @@ tree
 ```
 
 #### 词法闭包的实现
+
 你可以使用词法闭包来实现带有内部状态的过程。例如，用于模拟银行账户的过程可以按如下的方式编写：初始资金是 `10` 美元。函数接收一个整形参数。正数表示存入，负数表示取出。为了简单起见，这里允许存款为负数。
 
 ```Scheme
@@ -765,6 +788,7 @@ tree
       (set! balance (+ balance n))
       balance)))
 ```
+
 该过程将存款赋值为 `(+ balance n)`。下面是调用这个过程的结果。
 
 ```Scheme
@@ -772,7 +796,8 @@ tree
 ;Value: 30
 (bank-account -25)     ; withdrawing 25 dollars
 ;Value: 5
-```                         
+```
+
 因为在 `Scheme` 中，你可以编写返回过程的过程，因此你可以编写一个创建银行账户的函数。这个例子喻示着使用函数式程序设计语言可以很容易实现面向对象程序设计语言。实际上，只需要在这个基础上再加一点东西就可以实现一门面向对象程序设计语言了。
 
 ```Scheme
@@ -802,11 +827,12 @@ tree
 
 综上，你需要完成的 `Basic` 与 `Extension` 为:
 
+
 | `Basic/Extension` | 语法形式         | 要求                                           | 分值    |
 | ----------------- | ---------------- | ---------------------------------------------- | ------- |
 | `Basic`           | 四则运算与关系符 | 二元，支持嵌套，支持整数类与有理数类           | `10pts` |
 | `Basic`           | `quote`          | 见上文                                         | `5pts`  |
-| `Basic`           | 元组与数对       | 支持 `pair`,`cons`,`car`,`cdr`                 | `5pts`  |
+| `Basic`           | 元组与数对       | 支持`pair`,`cons`,`car`,`cdr`                  | `5pts`  |
 | `Basic`           | `begin`          | 支持顺序执行，详见上文                         | `5pts`  |
 | `Basic`           | 布尔值相关       | `and`,`or`,`not`,`if`                          | `10pts` |
 | `Basic`           | 变量与函数声明   | `var`,`lambda`,`Apply`                         | `10pts` |
