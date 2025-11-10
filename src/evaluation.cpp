@@ -810,6 +810,12 @@ Value IsString::evalRator(const Value &rand) { // string?
 }
 
 Value Begin::eval(Assoc &e) {
+    for (auto it = es.begin() ; it != es.end() ; ++it) {
+        if (it == es.end()-1) {
+            return (*it) -> eval(e);
+        }
+        (*it)->eval(e);
+    }
     //TODO: To complete the begin logic
 }
 
@@ -968,32 +974,49 @@ Value Cond::eval(Assoc &env) {
     //TODO: To complete the cond logic
 }
 
-Value Lambda::eval(Assoc &env) { 
+Value Lambda::eval(Assoc &env) {
+
+    return ProcedureV(x,e,env);
     //TODO: To complete the lambda logic
 }
 
 Value Apply::eval(Assoc &e) {
     if (rator->eval(e)->v_type != V_PROC) {throw RuntimeError("Attempt to apply a non-procedure");}
 
+    Value rator_val = rator->eval(e);
     //TODO: TO COMPLETE THE CLOSURE LOGIC
-    Procedure* clos_ptr = nullptr;//TODO!!!
+    Procedure* clos_ptr = dynamic_cast<Procedure *>(rator_val.get());
     
     //TODO: TO COMPLETE THE ARGUMENT PARSER LOGIC
     std::vector<Value> args;
     if (auto varNode = dynamic_cast<Variadic*>(clos_ptr->e.get())) {
+        args.emplace_back(varNode->eval(e));
         //TODO
     }
     if (args.size() != clos_ptr->parameters.size()) throw RuntimeError("Wrong number of arguments");
     
     //TODO: TO COMPLETE THE PARAMETERS' ENVIRONMENT LOGIC
-    Assoc param_env = nullptr;//TODO!!!
+    Assoc param_env = clos_ptr->env;
+    for (size_t i = 0 ; i < args.size() ; ++i) {
+        param_env = extend(clos_ptr->parameters[i] , args[i] , param_env);
+    }
 
     return clos_ptr->e->eval(param_env);
 }
 
 Value Define::eval(Assoc &env) {
-    //TODO: To complete the define logic
+    Value val = e->eval(env);
+
+    Value existing = find(var, env);
+    if (existing.get() != nullptr) {
+        modify(var, val, env);
+    } else {
+        env = extend(var, val, env);
+    }
+
+    return VoidV();
 }
+
 
 Value Let::eval(Assoc &env) {
     //TODO: To complete the let logic

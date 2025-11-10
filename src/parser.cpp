@@ -36,6 +36,7 @@ Expr Number::parse(Assoc &env) {
 }
 
 Expr RationalSyntax::parse(Assoc &env) {
+    return Expr(new RationalNum(numerator , denominator));
     //TODO: complete the rational parser
 }
 
@@ -64,31 +65,53 @@ Expr List::parse(Assoc &env) {
     //If not, use Apply function to package to a closure;
     //If so, find whether it's a variable or a keyword;
     SymbolSyntax *id = dynamic_cast<SymbolSyntax*>(stxs[0].get());
+
     if (id == nullptr) {
+        vector<Expr> operands;
+        for (auto & s : stxs) {
+            operands.emplace_back(s->parse(env));
+        }
+        return Expr(new Apply(operands[0] , vector<Expr>(operands.begin()+1 , operands.end())));
         //TODO: TO COMPLETE THE LOGIC
     }else{
     string op = id->s;
     if (find(op, env).get() != nullptr) {
+
         //TODO: TO COMPLETE THE PARAMETER PARSER LOGIC
     }
     if (primitives.count(op) != 0) {
         vector<Expr> parameters;
+        for (size_t i = 1 ; i < stxs.size() ; ++i) {
+            parameters.emplace_back(stxs[i]->parse(env));
+        }
         //TODO: TO COMPLETE THE PARAMETER PARSER LOGIC
         
         ExprType op_type = primitives[op];
         if (op_type == E_PLUS) {
-            if (parameters.size() == 2) {
-                return Expr(new Plus(parameters[0], parameters[1])); 
-            } else {
-                throw RuntimeError("Wrong number of arguments for +");
-            }
+            if (parameters.size() <= 1)
+                throw RuntimeError("+ requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new Plus(parameters[0] , parameters[1]));
+            return Expr(new PlusVar(parameters));
         } else if (op_type == E_MINUS) {
-            //TODO: TO COMPLETE THE LOGIC
+            if (parameters.size() <= 1)
+                throw RuntimeError("- requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new Minus(parameters[0] , parameters[1]));
+            return Expr(new MinusVar(parameters));
         } else if (op_type == E_MUL) {
-            //TODO: TO COMPLETE THE LOGIC
-        }  else if (op_type == E_DIV) {
-            //TODO: TO COMPLETE THE LOGIC
-        } else if (op_type == E_MODULO) {
+            if (parameters.size() <= 1)
+                throw RuntimeError("* requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new Mult(parameters[0] , parameters[1]));
+            return Expr(new MultVar(parameters));
+        } else if (op_type == E_DIV) {
+            if (parameters.size() <= 1)
+                throw RuntimeError("/ requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new Div(parameters[0] , parameters[1]));
+            return Expr(new DivVar(parameters));
+        }  else if (op_type == E_MODULO) {
             if (parameters.size() != 2) {
                 throw RuntimeError("Wrong number of arguments for modulo");
             }
@@ -96,26 +119,70 @@ Expr List::parse(Assoc &env) {
         } else if (op_type == E_LIST) {
             return Expr(new ListFunc(parameters));
         } else if (op_type == E_LT) {
+            if (parameters.size() <= 1)
+                throw RuntimeError("< requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new Less(parameters[0] , parameters[1]));
+            return Expr(new LessVar(parameters));
             //TODO: TO COMPLETE THE LOGIC
         } else if (op_type == E_LE) {
+            if (parameters.size() <= 1)
+                throw RuntimeError("<= requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new LessEq(parameters[0] , parameters[1]));
+            return Expr(new LessEqVar(parameters));
             //TODO: TO COMPLETE THE LOGIC
         } else if (op_type == E_EQ) {
+            if (parameters.size() <= 1)
+                throw RuntimeError("== requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new Equal(parameters[0] , parameters[1]));
+            return Expr(new EqualVar(parameters));
             //TODO: TO COMPLETE THE LOGIC
         } else if (op_type == E_GE) {
+            if (parameters.size() <= 1)
+                throw RuntimeError(">= requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new GreaterEq(parameters[0] , parameters[1]));
+            return Expr(new GreaterEqVar(parameters));
             //TODO: TO COMPLETE THE LOGIC
         } else if (op_type == E_GT) {
+            if (parameters.size() <= 1)
+                throw RuntimeError("> requires at least two argument");
+            if (parameters.size() == 2)
+                return Expr(new Greater(parameters[0] , parameters[1]));
+            return Expr(new GreaterVar(parameters));
             //TODO: TO COMPLETE THE LOGIC
         } else if (op_type == E_AND) {
             return Expr(new AndVar(parameters));
         } else if (op_type == E_OR) {
             return Expr(new OrVar(parameters));
         } else {
+            throw RuntimeError("Unknown primitive operator: " + op);
             //TODO: TO COMPLETE THE LOGIC
         }
     }
 
     if (reserved_words.count(op) != 0) {
     	switch (reserved_words[op]) {
+    	    case E_BEGIN:
+    	        break;
+    	    case E_QUOTE:
+    	        break;
+    	    case E_IF:
+    	        break;
+    	    case E_COND:
+    	        break;
+    	    case E_LAMBDA:
+    	        break;
+    	    case E_DEFINE:
+    	        break;
+    	    case E_LET:
+    	        break;
+    	    case E_LETREC:
+    	        break;
+    	    case E_SET:
+    	        break;
 			//TODO: TO COMPLETE THE reserve_words PARSER LOGIC
         	default:
             	throw RuntimeError("Unknown reserved word: " + op);

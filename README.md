@@ -27,7 +27,8 @@ cmake --build build --target code
 之后， `code` 程序会生成在子目录 `bin` 下， 在根目录下执行
 
 ```
-./code
+cmake -B build
+cmake --build build --target code./code
 ```
 
 来运行你的解释器。
@@ -323,7 +324,7 @@ scm> (eq? 1 1)
 ;Value: #t
 (pair? '())
 ;Value: #f
-(list? (cons 1 2))          
+(list? (cons 1 2))        
 ;Value: #f
 (list? (cons 1 (cons 2 '()))) 
 ;Value: #t
@@ -544,7 +545,7 @@ undefined ;;Value: undefined 变量在当前作用域未定义
 (define vhello "Hello world")   
 
 ; Hello world as a function
-(define fhello (lambda ()       
+(define fhello (lambda ()     
          "Hello world"))
 ```
 
