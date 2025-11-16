@@ -67,6 +67,57 @@ Value Variadic::eval(Assoc &e) { // evaluation of multi-operator primitive
 }
 
 Value Var::eval(Assoc &e) { // evaluation of variable
+
+    if (x.empty() || (isdigit(x[0]) || x[0] == '.' || x[0] == '@')) {
+        throw RuntimeError("Invalid variable name: starts with invalid character");
+    }
+
+    const std::string forbidden_chars = "#'\"`";
+    for (char c : x) {
+        if (forbidden_chars.find(c) != std::string::npos) {
+            throw RuntimeError("Invalid variable name: contains forbidden character '" + std::string(1, c) + "'");
+        }
+    }
+
+    auto isNumeric = [](const std::string &s) -> bool {
+        if (s.empty())
+            return false;
+        size_t i = 0;
+        if (s[i] == '+' || s[i] == '-')
+            i++; // Sign
+        bool has_digit = false;
+        bool has_dot = false;
+        bool has_exponent = false;
+        while (i < s.size()) {
+            if (isdigit(s[i])) {
+                has_digit = true;
+            } else if (s[i] == '.') {
+                if (has_dot || has_exponent)
+                    return false;
+                has_dot = true;
+            } else if (s[i] == 'e' || s[i] == 'E') {
+                if (has_exponent || !has_digit)
+                    return false;
+                has_exponent = true;
+                if (++i >= s.size() || (!isdigit(s[i]) && s[i] != '+' && s[i] != '-')) {
+                    return false;
+                }
+                if (s[i] == '+' || s[i] == '-')
+                    i++;
+                if (i >= s.size() || !isdigit(s[i]))
+                    return false;
+            } else {
+                return false;
+            }
+            i++;
+        }
+        // Must have at least one digit (reject "." or "+.")
+        return has_digit;
+    };
+
+    if (isNumeric(x)) {
+        throw RuntimeError("Invalid variable name: numeric format is prioritized as literal");
+    }
     // TODO: TO identify the invalid variable
     // We request all valid variable just need to be a symbol,you should promise:
     //The first character of a variable name cannot be a digit or any character from the set: {.@}
@@ -102,6 +153,10 @@ Value Var::eval(Assoc &e) { // evaluation of variable
             //TODO:to PASS THE parameters correctly;
             //COMPLETE THE CODE WITH THE HINT IN IF SENTENCE WITH CORRECT RETURN VALUE
             if (it != primitive_map.end()) {
+                Expr body = it->second.first;
+                std::vector<std::string> parameters = it->second.second;
+
+                return Value(new Procedure(parameters, body, e));
                 //TODO
             }
       }
@@ -147,6 +202,15 @@ Value Plus::evalRator(const Value &rand1, const Value &rand2) { // +
 }
 
 Value Minus::evalRator(const Value &rand1, const Value &rand2) { // -
+    if (auto it = dynamic_cast<Void*>(rand1.get())) {
+        if (rand2->v_type == V_INT) {
+            const Integer *p2 = dynamic_cast<Integer *>(rand2.get());
+            return IntegerV(-(p2->n));
+        }else if (rand2->v_type == V_RATIONAL) {
+            const Rational *p2 = dynamic_cast<Rational *>(rand2.get());
+            return RationalV(-(p2->numerator) , p2->denominator);
+        }
+    }
 
     if (rand1->v_type == V_INT && rand2->v_type == V_INT) {
         const Integer *p1 = dynamic_cast<Integer *>(rand1.get());
@@ -223,6 +287,15 @@ Value Mult::evalRator(const Value &rand1, const Value &rand2) { // *
 }
 
 Value Div::evalRator(const Value &rand1, const Value &rand2) { // /
+    if (auto it = dynamic_cast<Void*>(rand1.get())) {
+        if (rand2->v_type == V_INT) {
+            const Integer *p2 = dynamic_cast<Integer *>(rand2.get());
+            return RationalV(1,p2->n);
+        }else if (rand2->v_type == V_RATIONAL) {
+            const Rational *p2 = dynamic_cast<Rational *>(rand2.get());
+            return RationalV(p2->denominator , p2->numerator);
+        }
+    }
 
     if (rand1->v_type == V_INT && rand2->v_type == V_INT) {
         const Integer *p1 = dynamic_cast<Integer *>(rand1.get());

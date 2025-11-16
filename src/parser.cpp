@@ -89,31 +89,43 @@ Expr List::parse(Assoc &env) {
             parameters.emplace_back(stxs[i]->parse(env));
         }
         //TODO: TO COMPLETE THE PARAMETER PARSER LOGIC
-        
+        auto v = new MakeVoid();
         ExprType op_type = primitives[op];
         if (op_type == E_PLUS) {
-            if (parameters.size() <= 1)
-                throw RuntimeError("+ requires at least two argument");
+            if (parameters.size() < 1)
+                throw RuntimeError("+ requires at least one argument");
+        	if (parameters.size() == 1) {
+        		return parameters[0];
+        	}
             if (parameters.size() == 2)
                 return Expr(new Plus(parameters[0] , parameters[1]));
             return Expr(new PlusVar(parameters));
         } else if (op_type == E_MINUS) {
-            if (parameters.size() <= 1)
+            if (parameters.size() < 1)
                 throw RuntimeError("- requires at least two argument");
             if (parameters.size() == 2)
                 return Expr(new Minus(parameters[0] , parameters[1]));
+        	if (parameters.size() == 1) {
+        		return Expr(new Minus(Expr(v) , parameters[0]));
+        	}
             return Expr(new MinusVar(parameters));
         } else if (op_type == E_MUL) {
-            if (parameters.size() <= 1)
+            if (parameters.size() < 1)
                 throw RuntimeError("* requires at least two argument");
             if (parameters.size() == 2)
                 return Expr(new Mult(parameters[0] , parameters[1]));
+        	if (parameters.size() == 1) {
+        		return parameters[0];
+        	}
             return Expr(new MultVar(parameters));
         } else if (op_type == E_DIV) {
-            if (parameters.size() <= 1)
+            if (parameters.size() < 1)
                 throw RuntimeError("/ requires at least two argument");
             if (parameters.size() == 2)
                 return Expr(new Div(parameters[0] , parameters[1]));
+        	if (parameters.size() == 1) {
+        		return Expr(new Div(Expr(v) , parameters[0]));
+        	}
             return Expr(new DivVar(parameters));
         }  else if (op_type == E_MODULO) {
             if (parameters.size() != 2) {
