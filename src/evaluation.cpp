@@ -179,7 +179,7 @@ Value Plus::evalRator(const Value &rand1, const Value &rand2) { // +
         const Rational *p2 = dynamic_cast<Rational *>(rand2.get());
         if (p1 && p2) {
             return RationalV(p1->numerator * p2->denominator + p1->denominator * p2->numerator ,
-                p1->denominator * p2->numerator);
+                p1->denominator * p2->denominator);
         }
     }
 
@@ -369,7 +369,7 @@ Value PlusVar::evalRator(const std::vector<Value> &args) { // + with multiple ar
             const Rational *p2 = dynamic_cast<Rational *>(rand2.get());
             if (p1 && p2) {
                 return RationalV(p1->numerator * p2->denominator + p1->denominator * p2->numerator ,
-                    p1->denominator * p2->numerator);
+                    p1->denominator * p2->denominator);
             }
         }
 

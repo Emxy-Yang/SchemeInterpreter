@@ -1,3 +1,0 @@
-/mnt/d/study/C Project/git/SchemeInterpreter/build/CMakeFiles/code.dir
-/mnt/d/study/C Project/git/SchemeInterpreter/build/CMakeFiles/edit_cache.dir
-/mnt/d/study/C Project/git/SchemeInterpreter/build/CMakeFiles/rebuild_cache.dir
