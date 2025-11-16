@@ -839,27 +839,60 @@ Value convert(const Syntax& s) {
         return BooleanV(false);
     }
     if (auto Lst = dynamic_cast<List*>(s.get())) {
-        std::vector<Value> result;
-        for (const auto& i : Lst->stxs) {
-            result.emplace_back(convert(i));
+        if (Lst->stxs.empty()) {
+            return NullV();
+        }
+        int dot_count = 0;
+        int dot_pos = -1;
+        auto stxs = Lst->stxs;
+        for (size_t i = 0; i < stxs.size(); ++i) {
+            if (auto sym = dynamic_cast<SymbolSyntax *>(stxs[i].get())) {
+                if (sym->s == ".") {
+                    ++dot_count;
+                    if (dot_pos < 0) dot_pos = static_cast<ssize_t>(i);
+                }
+            }
         }
 
-        auto mk_list = [&](const std::vector<Value> &args) {
-            if (args.empty()) return PairV(NullV() , NullV());
+        if (dot_count > 1) {
+            throw RuntimeError("Illegal dot num");
+        }
+        if (dot_count == 0) {
+            std::vector<Value> result;
+            for (const auto& i : Lst->stxs) {
+                result.emplace_back(convert(i));
+            }
 
-            auto list_tail = PairV(args.back() , NullV());
+            auto mk_list = [&](const std::vector<Value> &args) {
+                auto list_tail = PairV(args.back() , NullV());
 
-            if (args.size() == 1) return list_tail;
-            auto i = args.end()-1;
-            do {
-                --i;
-                list_tail = PairV(*i , list_tail);
-            }while ( i != args.begin());
+                if (args.size() == 1) return list_tail;
+                auto i = args.end() - 1;
+                do {
+                    --i;
+                    list_tail = PairV(*i , list_tail);
+                }while ( i != args.begin());
 
-            return list_tail;
-        };
+                return list_tail;
+            };
 
-        return mk_list(result);
+            return mk_list(result);
+        }
+        else {
+            std::vector<Value> result;
+            for (const auto& i : Lst->stxs) {
+                result.emplace_back(convert(i));
+            }
+            if (stxs.size() < 3 || (dot_pos != stxs.size()-2) || dot_pos == 0) {
+                throw RuntimeError("Wrong dot position");
+            }else {
+                auto ans = PairV(convert(stxs[stxs.size()-3]) , convert(stxs[stxs.size()-1]));
+                for (int i = stxs.size()-3 ; i >=0 ; --i) {
+                    ans=PairV(convert(stxs[i]) , ans);
+                }
+                return ans;
+            }
+        }
     }
 
     throw RuntimeError("Wrong Type");
@@ -971,6 +1004,7 @@ Value Cond::eval(Assoc &env) {
             break;
         }
     }
+    return VoidV();
     //TODO: To complete the cond logic
 }
 
@@ -981,17 +1015,23 @@ Value Lambda::eval(Assoc &env) {
 }
 
 Value Apply::eval(Assoc &e) {
-    if (rator->eval(e)->v_type != V_PROC) {throw RuntimeError("Attempt to apply a non-procedure");}
-
     Value rator_val = rator->eval(e);
+
+    if (rator_val.get() == nullptr || rator_val->v_type != V_PROC) {
+        throw RuntimeError("Attempt to apply a non-procedure");
+    }
     //TODO: TO COMPLETE THE CLOSURE LOGIC
     Procedure* clos_ptr = dynamic_cast<Procedure *>(rator_val.get());
     
     //TODO: TO COMPLETE THE ARGUMENT PARSER LOGIC
     std::vector<Value> args;
-    if (auto varNode = dynamic_cast<Variadic*>(clos_ptr->e.get())) {
-        args.emplace_back(varNode->eval(e));
-        //TODO
+    // if (auto varNode = dynamic_cast<Variadic*>(clos_ptr->e.get())) {
+    //     args.emplace_back(varNode->eval(e));
+    //     //TODO
+    // }
+    args.reserve(rand.size());
+    for (auto &randExpr : rand) {
+        args.push_back(randExpr->eval(e));
     }
     if (args.size() != clos_ptr->parameters.size()) throw RuntimeError("Wrong number of arguments");
     
