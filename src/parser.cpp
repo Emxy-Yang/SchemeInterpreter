@@ -89,11 +89,12 @@ Expr List::parse(Assoc &env) {
             parameters.emplace_back(stxs[i]->parse(env));
         }
         //TODO: TO COMPLETE THE PARAMETER PARSER LOGIC
-        auto v = new MakeVoid();
+        auto v1 = Expr (new RationalNum(1,1));
+    	auto v0 = Expr (new RationalNum(0,1));
         ExprType op_type = primitives[op];
         if (op_type == E_PLUS) {
             if (parameters.size() == 0)
-                return Expr(new Plus(Expr(v) , Expr(v)));
+                return Expr(new Plus(v0,v0));
         	if (parameters.size() == 1) {
         		return parameters[0];
         	}
@@ -106,12 +107,12 @@ Expr List::parse(Assoc &env) {
             if (parameters.size() == 2)
                 return Expr(new Minus(parameters[0] , parameters[1]));
         	if (parameters.size() == 1) {
-        		return Expr(new Minus(Expr(v) , parameters[0]));
+        		return Expr(new Minus(v0 , parameters[0]));
         	}
             return Expr(new MinusVar(parameters));
         } else if (op_type == E_MUL) {
             if (parameters.size() == 0)
-            	return Expr(new Mult(Expr(v) , Expr(v)));
+            	return Expr(new Mult(v1,v1));
             if (parameters.size() == 2)
                 return Expr(new Mult(parameters[0] , parameters[1]));
         	if (parameters.size() == 1) {
@@ -124,7 +125,7 @@ Expr List::parse(Assoc &env) {
             if (parameters.size() == 2)
                 return Expr(new Div(parameters[0] , parameters[1]));
         	if (parameters.size() == 1) {
-        		return Expr(new Div(Expr(v) , parameters[0]));
+        		return Expr(new Div(v1 , parameters[0]));
         	}
             return Expr(new DivVar(parameters));
         }  else if (op_type == E_MODULO) {
@@ -229,7 +230,17 @@ Expr List::parse(Assoc &env) {
         		throw RuntimeError("string? requires exactly 1 argument");
         	return Expr(new IsString(parameters[0]));
         }else if (op_type == E_EXIT) {
+        	if (parameters.size() != 0)
+        		throw RuntimeError("exit requires exactly 0 argument");
 	        return Expr(new Exit());
+        }else if (op_type == E_VOID) {
+        	if (parameters.size() != 0)
+        		throw RuntimeError("void requires exactly 0 argument");
+        	return Expr(new MakeVoid());
+        }else if (op_type == E_DISPLAY) {
+        	if (parameters.size() != 1)
+        		throw RuntimeError("Dispaly requires exactly 1 argument");
+	        return Expr(new Display(parameters[0]));
         }
     	else {
             throw RuntimeError("Unknown primitive operator: " + op);

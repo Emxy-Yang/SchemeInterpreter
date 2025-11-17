@@ -1,9 +1,9 @@
-5
+Wrong number of argumentsRuntimeError
 42
 7
 3
 #t
-RuntimeError
+Wrong typenameRuntimeError
 1
 2
 zero

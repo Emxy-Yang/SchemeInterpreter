@@ -1,0 +1,8 @@
+1c1
+< Wrong number of argumentsRuntimeError
+---
+> 5
+6c6
+< Wrong typenameRuntimeError
+---
+> RuntimeError

@@ -6,8 +6,8 @@ echo "--------------------------------------------------------------------------
 # 确保我们在score目录下
 cd "$(dirname "$0")"
 
-L=1
-R=118
+L=11
+R=11
 for ((i = $L; i <= $R; i = i + 1))
 do
     echo ""
@@ -41,7 +41,7 @@ EOF
 done
 
 L_EXTRA=1
-R_EXTRA=7
+R_EXTRA=0
 for ((i = $L_EXTRA; i <= $R_EXTRA; i = i + 1))
 do
     echo ""

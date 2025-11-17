@@ -165,7 +165,7 @@ Value Var::eval(Assoc &e) { // evaluation of variable
 }
 
 Value Plus::evalRator(const Value &rand1, const Value &rand2) { // +
-    if (auto p = dynamic_cast<Void*>(rand1.get())) {
+    if (rand1->v_type == V_VOID) {
         return IntegerV(0);
     }
 
@@ -254,7 +254,7 @@ Value Minus::evalRator(const Value &rand1, const Value &rand2) { // -
 }
 
 Value Mult::evalRator(const Value &rand1, const Value &rand2) { // *
-    if (auto p = dynamic_cast<Void*>(rand1.get())) {
+    if (rand1->v_type == V_VOID) {
         return IntegerV(1);
     }
 
@@ -808,8 +808,7 @@ Value IsList::evalRator(const Value &rand) { // list?
 
 Value Car::evalRator(const Value &rand) { // car
     if (rand->v_type != V_PAIR) {
-        throw std::runtime_error("Not a pair");
-
+        throw RuntimeError("Not a pair");
     }
     auto temp = dynamic_cast<Pair*>(rand.get());
 
@@ -821,7 +820,7 @@ Value Car::evalRator(const Value &rand) { // car
 Value Cdr::evalRator(const Value &rand) { // cdr
 
     if (rand->v_type != V_PAIR) {
-        throw std::runtime_error("Not a pair");
+        throw RuntimeError("Not a pair");
 
     }
     auto temp = dynamic_cast<Pair*>(rand.get());
@@ -928,7 +927,7 @@ Value convert(const Syntax& s) {
             if (auto sym = dynamic_cast<SymbolSyntax *>(stxs[i].get())) {
                 if (sym->s == ".") {
                     ++dot_count;
-                    if (dot_pos < 0) dot_pos = static_cast<ssize_t>(i);
+                    if (dot_pos < 0) dot_pos = i;
                 }
             }
         }
@@ -967,7 +966,9 @@ Value convert(const Syntax& s) {
             }else {
                 auto ans = PairV(convert(stxs[stxs.size()-3]) , convert(stxs[stxs.size()-1]));
                 for (int i = stxs.size()-3 ; i >=0 ; --i) {
-                    ans=PairV(convert(stxs[i]) , ans);
+                    if (i != stxs.size()-3) {
+                        ans=PairV(convert(stxs[i]) , ans);
+                    }
                 }
                 return ans;
             }
@@ -984,45 +985,48 @@ Value Quote::eval(Assoc& e) {
 
 Value AndVar::eval(Assoc &e) { // and with short-circuit evaluation
     if (rands.empty()) {
-        throw RuntimeError("Need at least one argument") ;
+        return BooleanV(true) ;
     }
 
-    for (const auto& i : rands) {
-        if (auto check_false = dynamic_cast<Boolean*>(i->eval(e).get())) {
-            if (check_false->b == false) {
-                return BooleanV(false);
-            }
+    Value result = VoidV();
+
+    for (auto &expr : rands) {
+        result = expr->eval(e);
+
+        if (auto b = dynamic_cast<Boolean*>(result.get())) {
+            if (!b->b) return BooleanV(false); // short circuit
         }
     }
 
-    return rands.back()->eval(e);
+    return result;
+
     //TODO: To complete the and logic
 }
 
 Value OrVar::eval(Assoc &e) { // or with short-circuit evaluation
     if (rands.empty()) {
-        throw RuntimeError("Need at least one argument");
+        return BooleanV(false);
     }
-
+    Value result = VoidV();
     for (const auto& i : rands) {
-        if (i->eval(e)->v_type != V_BOOL) {
-            return BooleanV(true);
+        result = i->eval(e);
+        if (result->v_type != V_BOOL) {
+            return result;
         }else {
-            auto check_true = dynamic_cast<Boolean*>(i->eval(e).get());
-            if (check_true->b == true) {
+            if (dynamic_cast<Boolean*>(result.get())->b == true) {
                 return BooleanV(true);
             }
         }
 
-        return BooleanV(false);
     }
+    return BooleanV(false);
     //TODO: To complete the or logic
 }
 
 Value Not::evalRator(const Value &rand) { // not
     if (rand->v_type == V_BOOL) {
         auto pt = dynamic_cast<Boolean*>(rand.get());
-        if (pt->b == true) {
+        if (pt->b == false) {
             return BooleanV(true);
         }
     }
