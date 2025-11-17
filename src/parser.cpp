@@ -92,8 +92,8 @@ Expr List::parse(Assoc &env) {
         auto v = new MakeVoid();
         ExprType op_type = primitives[op];
         if (op_type == E_PLUS) {
-            if (parameters.size() < 1)
-                throw RuntimeError("+ requires at least one argument");
+            if (parameters.size() == 0)
+                return Expr(new Plus(Expr(v) , Expr(v)));
         	if (parameters.size() == 1) {
         		return parameters[0];
         	}
@@ -110,8 +110,8 @@ Expr List::parse(Assoc &env) {
         	}
             return Expr(new MinusVar(parameters));
         } else if (op_type == E_MUL) {
-            if (parameters.size() < 1)
-                throw RuntimeError("* requires at least two argument");
+            if (parameters.size() == 0)
+            	return Expr(new Mult(Expr(v) , Expr(v)));
             if (parameters.size() == 2)
                 return Expr(new Mult(parameters[0] , parameters[1]));
         	if (parameters.size() == 1) {

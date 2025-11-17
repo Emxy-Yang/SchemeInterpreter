@@ -165,6 +165,9 @@ Value Var::eval(Assoc &e) { // evaluation of variable
 }
 
 Value Plus::evalRator(const Value &rand1, const Value &rand2) { // +
+    if (auto p = dynamic_cast<Void*>(rand1.get())) {
+        return IntegerV(0);
+    }
 
     if (rand1->v_type == V_INT && rand2->v_type == V_INT) {
         const Integer *p1 = dynamic_cast<Integer *>(rand1.get());
@@ -251,6 +254,9 @@ Value Minus::evalRator(const Value &rand1, const Value &rand2) { // -
 }
 
 Value Mult::evalRator(const Value &rand1, const Value &rand2) { // *
+    if (auto p = dynamic_cast<Void*>(rand1.get())) {
+        return IntegerV(1);
+    }
 
     if (rand1->v_type == V_INT && rand2->v_type == V_INT) {
         const Integer *p1 = dynamic_cast<Integer *>(rand1.get());
