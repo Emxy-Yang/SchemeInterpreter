@@ -1105,7 +1105,7 @@ Value Apply::eval(Assoc &e) {
     }
     //TODO: TO COMPLETE THE CLOSURE LOGIC
     Procedure* clos_ptr = dynamic_cast<Procedure *>(rator_val.get());
-    
+
     //TODO: TO COMPLETE THE ARGUMENT PARSER LOGIC
     std::vector<Value> args;
     // if (auto varNode = dynamic_cast<Variadic*>(clos_ptr->e.get())) {
@@ -1117,7 +1117,7 @@ Value Apply::eval(Assoc &e) {
         args.push_back(randExpr->eval(e));
     }
     if (args.size() != clos_ptr->parameters.size()) throw RuntimeError("Wrong number of arguments");
-    
+
     //TODO: TO COMPLETE THE PARAMETERS' ENVIRONMENT LOGIC
     Assoc param_env = clos_ptr->env;
     for (size_t i = 0 ; i < args.size() ; ++i) {
@@ -1126,6 +1126,11 @@ Value Apply::eval(Assoc &e) {
 
     return clos_ptr->e->eval(param_env);
 }
+
+
+
+
+
 
 Value Define::eval(Assoc &env) {
     Value val = e->eval(env);

@@ -66,7 +66,7 @@ void REPL(){
             }
         }
         catch (const RuntimeError &RE){
-            std :: cout << RE.message();
+            //std :: cout << RE.message();
             std :: cout << "RuntimeError";
         }
         puts("");

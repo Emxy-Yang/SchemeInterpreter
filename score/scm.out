@@ -1,4 +1,4 @@
-Wrong number of argumentsRuntimeError
++ requires at least one argumentRuntimeError
 42
 7
 3
