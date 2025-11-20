@@ -28,6 +28,10 @@ struct ValueBase {
     virtual void show(std::ostream &) = 0;
     virtual void showCdr(std::ostream &);
     virtual ~ValueBase() = default;
+    virtual void show(std::ostream & os, int flag) {
+        os<<"";
+    };
+
 };
 
 /**
@@ -82,9 +86,15 @@ Value find(const std::string &, Assoc &);
  */
 struct Void : ValueBase {
     Void();
+    Void(int i):ValueBase(V_VOID_DEFINE) {
+    }
     virtual void show(std::ostream &) override;
 };
 Value VoidV();
+
+inline Value VoidD() {
+    return Value(new Void(0));
+};
 
 /**
  * @brief Integer value

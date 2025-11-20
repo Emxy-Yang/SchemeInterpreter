@@ -1,1 +1,25 @@
-
+scm> 0
+2
+3
+5
+10
+20
+0
+"true branch"
+"only else"
+cond requires at least one clauseRuntimeError
+"true branch"
+scm> "A"
+"B"
+"C"
+"D"
+"F"
+scm> "child"
+"teenager"
+"adult"
+"senior"
+"only else"
+scm> "Stay inside!"
+"Wear a coat"
+"Nice weather"
+"It's hot!"

@@ -1,28 +1,20 @@
-1c1,25
-< 
+1c1
+< scm> 0
 ---
 > 0
-> 2
-> 3
-> 5
-> 10
-> 20
-> 0
-> "true branch"
-> "only else"
+10c10
+< cond requires at least one clauseRuntimeError
+---
 > RuntimeError
-> "true branch"
+12c12
+< scm> "A"
+---
 > "A"
-> "B"
-> "C"
-> "D"
-> "F"
+17c17
+< scm> "child"
+---
 > "child"
-> "teenager"
-> "adult"
-> "senior"
-> "only else"
+22c22
+< scm> "Stay inside!"
+---
 > "Stay inside!"
-> "Wear a coat"
-> "Nice weather"
-> "It's hot!"

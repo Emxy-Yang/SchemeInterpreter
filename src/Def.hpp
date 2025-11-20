@@ -119,7 +119,8 @@ enum ValueType {
     V_PAIR,             
     V_PROC,             
     V_VOID,            
-    V_TERMINATE        
+    V_TERMINATE,
+    V_VOID_DEFINE
 };
 
 #endif // DEF_HPP

@@ -770,18 +770,13 @@ Value Cons::evalRator(const Value &rand1, const Value &rand2) { // cons
 }
 
 Value ListFunc::evalRator(const std::vector<Value> &args) { // list function
-    if (args.empty()) return PairV(NullV() , NullV());
+    Value list = NullV();
 
-    auto list_tail = PairV(args.back() , NullV());
+    for (int i = args.size() - 1; i >= 0; --i) {
+        list = PairV(args[i], list);
+    }
 
-    if (args.size() == 1) return list_tail;
-    auto i = args.end()-1;
-    do {
-        --i;
-        list_tail = PairV(*i , list_tail);
-    }while ( i != args.begin());
-
-    return list_tail;
+    return list;
     //TODO: To complete the list logic
 }
 
@@ -806,26 +801,28 @@ Value IsList::evalRator(const Value &rand) { // list?
     //TODO: To complete the list? logic
 }
 
-Value Car::evalRator(const Value &rand) { // car
-    if (rand->v_type != V_PAIR) {
+Value Car::evalRator(const Value &rand) {
+    auto p = dynamic_cast<Pair*>(rand.get());
+    if (!p) {
         throw RuntimeError("Not a pair");
     }
-    auto temp = dynamic_cast<Pair*>(rand.get());
 
-    return temp->car;
-
-    //TODO: To complete the car logic
+    return p->car;
 }
+
 
 Value Cdr::evalRator(const Value &rand) { // cdr
 
-    if (rand->v_type != V_PAIR) {
-        throw RuntimeError("Not a pair");
-
+    if (rand->v_type == V_NULL) {
+        return NullV();
     }
-    auto temp = dynamic_cast<Pair*>(rand.get());
 
-    return temp->cdr;
+    if (rand->v_type != V_PAIR) {
+        throw RuntimeError("cdr expects a pair");
+    }
+
+    auto p = dynamic_cast<Pair*>(rand.get());
+    return p->cdr;
     //TODO: To complete the cdr logic
 }
 
@@ -1172,7 +1169,7 @@ Value Apply::eval(Assoc &e) {
     //TODO: TO COMPLETE THE PARAMETERS' ENVIRONMENT LOGIC
     Assoc param_env = clos_ptr->env;
 	for (size_t i = 0; i < clos_ptr->parameters.size(); ++i) {
-        extend(clos_ptr->parameters[i], args[i] , param_env);  //w 绑定形参和实参
+        param_env = extend (clos_ptr->parameters[i], args[i] , param_env);  //w 绑定形参和实参
     }
 	if (auto* makeVoid = dynamic_cast<MakeVoid*>(clos_ptr->e.get())) {
         return makeVoid->eval(e);  // MakeVoid无参数，直接调用eval
@@ -1264,7 +1261,7 @@ Value Define::eval(Assoc &env) {
             env = extend(var, val, env);
         }
 
-        return VoidV();
+        return VoidD();
     }
 
     Value val = e->eval(env);
@@ -1276,7 +1273,7 @@ Value Define::eval(Assoc &env) {
         env = extend(var, val, env);
     }
 
-    return VoidV();
+    return VoidD();
 }
 
 
@@ -1300,5 +1297,5 @@ Value Display::evalRator(const Value &rand) { // display function
         rand->show(std::cout);
     }
     
-    return VoidV();
+    return VoidD();
 }
